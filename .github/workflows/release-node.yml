@@ -3,6 +3,7 @@ name: Release Node SDK
 on:
   push:
     tags: ["node-v*"]
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -2,13 +2,13 @@
   "name": "touchenv-node-sample",
   "version": "1.0.0",
   "private": true,
-  "description": "Express app using @touchenv/node (drop-in dotenv replacement)",
+  "description": "Express app using @cstar/touchenv-node (drop-in dotenv replacement)",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "@touchenv/node": "^0.1.0",
+    "@cstar/touchenv-node": "^0.1.0",
     "express": "^4.21.0"
   }
 }

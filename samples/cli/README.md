@@ -6,7 +6,7 @@ edit interactively, and decrypt for piping.
 ## Prerequisites
 
 - Node.js 18+
-- touchenv CLI installed (`npm i -g touchenv`)
+- touchenv CLI installed (`npm i -g @cstar/touchenv`)
 
 ## Quick Start
 

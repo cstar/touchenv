@@ -31,7 +31,7 @@ pipeline needs GPR auth to install the CLI and SDKs.
 Add a `.npmrc` to your repo (or generate one in CI):
 
 ```ini
-@touchenv:registry=https://npm.pkg.github.com
+@cstar:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
 ```
 

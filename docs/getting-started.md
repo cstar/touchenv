@@ -18,20 +18,20 @@ GitHub personal access token (PAT) that has `read:packages` scope.
 
 ```ini
 # ~/.npmrc (global) or .npmrc (project-level)
-@touchenv:registry=https://npm.pkg.github.com
+@cstar:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
 
 **Install:**
 
 ```bash
-npm install -g touchenv --registry=https://npm.pkg.github.com/cstar
+npm install -g @cstar/touchenv --registry=https://npm.pkg.github.com
 ```
 
 Or use it locally in your project:
 
 ```bash
-npm install --save-dev touchenv --registry=https://npm.pkg.github.com/cstar
+npm install --save-dev @cstar/touchenv --registry=https://npm.pkg.github.com
 ```
 
 ## 2. Initialize an encrypted env file
@@ -98,12 +98,12 @@ Install the SDK for your language and replace your dotenv import.
 With the `.npmrc` registry config from step 1 in place:
 
 ```bash
-npm install @touchenv/node
+npm install @cstar/touchenv-node
 ```
 
 ```js
 // Replace: require('dotenv').config()
-import { config } from '@touchenv/node';
+import { config } from '@cstar/touchenv-node';
 config();
 
 // process.env.DATABASE_URL is now available

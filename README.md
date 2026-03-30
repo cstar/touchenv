@@ -19,11 +19,11 @@ your secrets are encrypted at rest while your workflow stays the same.
 ## Quick Start
 
 ```bash
-# Configure npm to use GitHub Packages for @touchenv packages
-echo "@touchenv:registry=https://npm.pkg.github.com" >> .npmrc
+# Configure npm to use GitHub Packages for @cstar packages
+echo "@cstar:registry=https://npm.pkg.github.com" >> .npmrc
 
 # Install the CLI
-npm install -g touchenv --registry=https://npm.pkg.github.com/cstar
+npm install -g @cstar/touchenv --registry=https://npm.pkg.github.com
 
 # Initialize a new encrypted env file (generates a DEK, stores in Keychain)
 touchenv init
@@ -55,7 +55,7 @@ application reads `.env.encrypted` instead of `.env` with a one-line change.
 Requires `.npmrc` with GPR registry (see [Getting Started](docs/getting-started.md)):
 
 ```bash
-npm install @touchenv/node
+npm install @cstar/touchenv-node
 ```
 
 ```js
@@ -63,7 +63,7 @@ npm install @touchenv/node
 // require('dotenv').config()
 
 // After:
-import { config } from '@touchenv/node';
+import { config } from '@cstar/touchenv-node';
 config();
 // process.env is now populated from .env.encrypted
 ```

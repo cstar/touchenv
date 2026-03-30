@@ -49,7 +49,6 @@ jobs:
         run: cd sdks/node && npm run build
       - name: Test
         run: cd sdks/node && npm test
-        continue-on-error: true  # no tests yet
 
   # ── SDK: Python ──
   sdk-python:

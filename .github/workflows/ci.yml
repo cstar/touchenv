@@ -63,7 +63,6 @@ jobs:
         run: cd sdks/python && pip install -e ".[dev]"
       - name: Test
         run: cd sdks/python && pytest
-        continue-on-error: true  # no tests yet
 
   # ── SDK: Go ──
   sdk-go:

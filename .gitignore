@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.build/
+
+# Build output
+cli/dist/
+*.js.map
+
+# Environment files (never commit real secrets)
+.env
+.env.local
+.env.*.local
+
+# Encrypted env files are safe to commit
+# !.env.encrypted
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+*.whl
+
+# Go
+vendor/
+
+# Swift
+.build/
+Package.resolved
+
+# Beads (local issue tracking)
+.beads/
+
+# Runtime (Gas Town)
+.runtime/

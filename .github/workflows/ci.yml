@@ -1,0 +1,6 @@
+# CI workflow — implementation in to-sye
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:

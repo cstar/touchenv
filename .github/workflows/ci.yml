@@ -76,7 +76,6 @@ jobs:
         run: cd sdks/go && go build ./...
       - name: Test
         run: cd sdks/go && go test ./...
-        continue-on-error: true  # no tests yet
 
   # ── Cross-language test vector gate ──
   vectors:

@@ -3,6 +3,7 @@ name: Release Node SDK
 on:
   push:
     tags: ["node-v*"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -23,6 +24,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://npm.pkg.github.com"
+          scope: "@touchenv"
 
       - name: Install
         run: npm ci
@@ -45,6 +47,7 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+          scope: "@touchenv"
 
       - name: Publish to npm
         if: env.HAS_NPM_TOKEN != ''

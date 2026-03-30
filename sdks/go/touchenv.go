@@ -3,6 +3,9 @@
 // It reads a .env.encrypted file, decrypts it using AES-256-GCM, parses the
 // dotenv content, and sets the environment variables. The decryption key is
 // read from the TOUCHENV_KEY environment variable (64-char hex DEK).
+//
+// If .env.encrypted is not found but a plaintext .env exists, it falls back to
+// reading .env and emits a warning suggesting migration to touchenv.
 package touchenv
 
 import (
@@ -12,10 +15,17 @@ import (
 )
 
 const defaultFile = ".env.encrypted"
+const plaintextFallback = ".env"
+
+const migrationWarning = "[touchenv] Warning: .env.encrypted not found, falling back to plaintext .env file. " +
+	"Run `touchenv init` to encrypt your .env file for secure storage."
 
 // Load reads and decrypts .env.encrypted files, then sets the parsed
 // key-value pairs as environment variables. If no filenames are given,
 // it defaults to ".env.encrypted" in the current directory.
+//
+// If .env.encrypted is not found but .env exists, it falls back to reading
+// the plaintext .env and emits a warning.
 //
 // The DEK is read from the TOUCHENV_KEY environment variable.
 // This is a drop-in replacement for godotenv.Load().
@@ -24,13 +34,8 @@ func Load(filenames ...string) error {
 		filenames = []string{defaultFile}
 	}
 
-	keyHex := os.Getenv("TOUCHENV_KEY")
-	if keyHex == "" {
-		return fmt.Errorf("TOUCHENV_KEY environment variable not set")
-	}
-
 	for _, filename := range filenames {
-		if err := loadFile(filename, keyHex); err != nil {
+		if err := loadFile(filename); err != nil {
 			return fmt.Errorf("loading %s: %w", filename, err)
 		}
 	}
@@ -45,14 +50,9 @@ func Read(filenames ...string) (map[string]string, error) {
 		filenames = []string{defaultFile}
 	}
 
-	keyHex := os.Getenv("TOUCHENV_KEY")
-	if keyHex == "" {
-		return nil, fmt.Errorf("TOUCHENV_KEY environment variable not set")
-	}
-
 	result := make(map[string]string)
 	for _, filename := range filenames {
-		env, err := readFile(filename, keyHex)
+		env, err := readFile(filename)
 		if err != nil {
 			return nil, fmt.Errorf("reading %s: %w", filename, err)
 		}
@@ -74,8 +74,34 @@ func Parse(content string) map[string]string {
 	return parse(content)
 }
 
-func loadFile(filename, keyHex string) error {
-	env, err := readFile(filename, keyHex)
+// resolveEnvFile checks if filename exists; if not and filename is the default,
+// falls back to .env plaintext. Returns (resolvedPath, encrypted, error).
+func resolveEnvFile(filename string) (string, bool, error) {
+	path, err := filepath.Abs(filename)
+	if err != nil {
+		return "", false, err
+	}
+
+	if _, err := os.Stat(path); err == nil {
+		return path, true, nil
+	}
+
+	// Only try fallback for the default .env.encrypted filename
+	if filepath.Base(filename) == defaultFile {
+		dir := filepath.Dir(path)
+		plainPath := filepath.Join(dir, plaintextFallback)
+		if _, err := os.Stat(plainPath); err == nil {
+			fmt.Fprintln(os.Stderr, migrationWarning)
+			return plainPath, false, nil
+		}
+	}
+
+	// Return original path so caller gets a normal "file not found" error
+	return path, true, nil
+}
+
+func loadFile(filename string) error {
+	env, err := readFile(filename)
 	if err != nil {
 		return err
 	}
@@ -89,8 +115,8 @@ func loadFile(filename, keyHex string) error {
 	return nil
 }
 
-func readFile(filename, keyHex string) (map[string]string, error) {
-	path, err := filepath.Abs(filename)
+func readFile(filename string) (map[string]string, error) {
+	path, encrypted, err := resolveEnvFile(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -100,10 +126,17 @@ func readFile(filename, keyHex string) (map[string]string, error) {
 		return nil, err
 	}
 
-	plaintext, err := decodeEncrypted(data, keyHex)
-	if err != nil {
-		return nil, err
+	if encrypted {
+		keyHex := os.Getenv("TOUCHENV_KEY")
+		if keyHex == "" {
+			return nil, fmt.Errorf("TOUCHENV_KEY environment variable not set")
+		}
+		plaintext, err := decodeEncrypted(data, keyHex)
+		if err != nil {
+			return nil, err
+		}
+		return parse(plaintext), nil
 	}
 
-	return parse(plaintext), nil
+	return parse(string(data)), nil
 }

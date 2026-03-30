@@ -19,8 +19,11 @@ your secrets are encrypted at rest while your workflow stays the same.
 ## Quick Start
 
 ```bash
+# Configure npm to use GitHub Packages for @touchenv packages
+echo "@touchenv:registry=https://npm.pkg.github.com" >> .npmrc
+
 # Install the CLI
-npm install -g touchenv
+npm install -g touchenv --registry=https://npm.pkg.github.com/cstar
 
 # Initialize a new encrypted env file (generates a DEK, stores in Keychain)
 touchenv init
@@ -49,6 +52,8 @@ application reads `.env.encrypted` instead of `.env` with a one-line change.
 
 ### Node.js
 
+Requires `.npmrc` with GPR registry (see [Getting Started](docs/getting-started.md)):
+
 ```bash
 npm install @touchenv/node
 ```
@@ -65,8 +70,10 @@ config();
 
 ### Python
 
+Install from [GitHub Releases](https://github.com/cstar/touchenv/releases):
+
 ```bash
-pip install touchenv
+pip install "touchenv @ https://github.com/cstar/touchenv/releases/download/python-v0.1.0/touchenv-0.1.0-py3-none-any.whl"
 ```
 
 ```python
@@ -83,7 +90,7 @@ load()
 ### Go
 
 ```bash
-go get github.com/<org>/touchenv-go
+go get github.com/cstar/touchenv-go
 ```
 
 ```go
@@ -91,7 +98,7 @@ go get github.com/<org>/touchenv-go
 // godotenv.Load()
 
 // After:
-import "github.com/<org>/touchenv-go"
+import touchenv "github.com/cstar/touchenv-go"
 touchenv.Load()
 // os.Getenv() now returns decrypted values
 ```

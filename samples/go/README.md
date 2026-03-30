@@ -6,7 +6,7 @@ Drop-in replacement for `godotenv`. Shows how to migrate a Go HTTP server from
 ## Prerequisites
 
 - Go 1.22+
-- touchenv CLI installed (`npm i -g touchenv`)
+- touchenv CLI installed (see [Getting Started](../../docs/getting-started.md))
 
 ## Quick Start
 

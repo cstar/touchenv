@@ -1,6 +1,6 @@
 {
   "name": "@cstar/touchenv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Encrypted .env file manager",
   "type": "module",
   "bin": {

@@ -6,6 +6,10 @@ import { parse } from '../parser.js';
 import { resolveKey } from '../keychain.js';
 
 const ENCRYPTED_FILE = '.env.encrypted';
+const PLAINTEXT_FALLBACK = '.env';
+const MIGRATION_WARNING =
+  '[touchenv] Warning: .env.encrypted not found, falling back to plaintext .env file. '
+  + 'Run `touchenv init` to encrypt your .env file for secure storage.';
 
 export const listCommand = new Command('list')
   .description('List all keys in .env.encrypted')
@@ -15,15 +19,24 @@ export const listCommand = new Command('list')
     const projectDir = resolve(opts.dir);
     const encFile = resolve(projectDir, ENCRYPTED_FILE);
 
-    if (!existsSync(encFile)) {
-      console.error(`error: ${ENCRYPTED_FILE} not found (run 'touchenv init' first)`);
-      process.exit(1);
-    }
+    let env: Record<string, string>;
 
-    const hexKey = await resolveKey(projectDir);
-    const data = readFileSync(encFile);
-    const plaintext = decodeEncrypted(data, hexKey);
-    const { env } = parse(plaintext);
+    if (!existsSync(encFile)) {
+      const plainFile = resolve(projectDir, PLAINTEXT_FALLBACK);
+      if (existsSync(plainFile)) {
+        console.warn(MIGRATION_WARNING);
+        const plaintext = readFileSync(plainFile, 'utf-8');
+        ({ env } = parse(plaintext));
+      } else {
+        console.error(`error: ${ENCRYPTED_FILE} not found (run 'touchenv init' first)`);
+        process.exit(1);
+      }
+    } else {
+      const hexKey = await resolveKey(projectDir);
+      const data = readFileSync(encFile);
+      const plaintext = decodeEncrypted(data, hexKey);
+      ({ env } = parse(plaintext));
+    }
 
     const keys = Object.keys(env);
     if (keys.length === 0) {

@@ -6,12 +6,12 @@ Drop-in replacement for `python-dotenv`. Shows how to migrate a Flask app from
 ## Prerequisites
 
 - Python 3.10+
-- touchenv CLI installed (`npm i -g touchenv`)
+- touchenv CLI installed (see [Getting Started](../../docs/getting-started.md))
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (touchenv SDK from GitHub Releases)
 pip install -r requirements.txt
 
 # 2. Initialize touchenv and add secrets

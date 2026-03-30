@@ -21,6 +21,48 @@ touchenv get --dek
 
 Copy this value into your CI platform's secret store.
 
+## Installing touchenv in CI
+
+touchenv packages are published to GitHub Packages Registry (GPR). Your CI
+pipeline needs GPR auth to install the CLI and SDKs.
+
+### npm packages (CLI and Node SDK)
+
+Add a `.npmrc` to your repo (or generate one in CI):
+
+```ini
+@touchenv:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+In GitHub Actions, `GITHUB_TOKEN` provides automatic GPR access. For other CI
+platforms, create a GitHub PAT with `read:packages` scope and store it as a
+secret.
+
+### Python SDK
+
+The Python SDK is distributed via GitHub Releases. Install directly:
+
+```bash
+pip install "touchenv @ https://github.com/cstar/touchenv/releases/download/python-v0.1.0/touchenv-0.1.0-py3-none-any.whl"
+```
+
+For private repos, authenticate with a GitHub PAT:
+
+```bash
+pip install "touchenv @ https://${GITHUB_TOKEN}@github.com/cstar/touchenv/releases/download/python-v0.1.0/touchenv-0.1.0-py3-none-any.whl"
+```
+
+### Go SDK
+
+The Go SDK uses the standard Go module path and is fetched via the Go proxy:
+
+```bash
+go get github.com/cstar/touchenv-go
+```
+
+No additional auth is needed for public repos.
+
 ## Platform Setup
 
 ### GitHub Actions
@@ -49,7 +91,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
       - run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm test
       # process.env is populated from .env.encrypted automatically
 ```

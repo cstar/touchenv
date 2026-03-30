@@ -10,14 +10,28 @@ file, and loading secrets in your application.
 
 ## 1. Install the CLI
 
+touchenv is published to [GitHub Packages](https://github.com/cstar/touchenv/packages).
+You need to configure npm to use the GPR registry, then authenticate with a
+GitHub personal access token (PAT) that has `read:packages` scope.
+
+**Set up `.npmrc`:**
+
+```ini
+# ~/.npmrc (global) or .npmrc (project-level)
+@touchenv:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+**Install:**
+
 ```bash
-npm install -g touchenv
+npm install -g touchenv --registry=https://npm.pkg.github.com/cstar
 ```
 
 Or use it locally in your project:
 
 ```bash
-npm install --save-dev touchenv
+npm install --save-dev touchenv --registry=https://npm.pkg.github.com/cstar
 ```
 
 ## 2. Initialize an encrypted env file
@@ -81,6 +95,8 @@ Install the SDK for your language and replace your dotenv import.
 
 ### Node.js
 
+With the `.npmrc` registry config from step 1 in place:
+
 ```bash
 npm install @touchenv/node
 ```
@@ -96,8 +112,10 @@ console.log(process.env.DATABASE_URL);
 
 ### Python
 
+Install from [GitHub Releases](https://github.com/cstar/touchenv/releases):
+
 ```bash
-pip install touchenv
+pip install "touchenv @ https://github.com/cstar/touchenv/releases/download/python-v0.1.0/touchenv-0.1.0-py3-none-any.whl"
 ```
 
 ```python
@@ -112,7 +130,7 @@ print(os.environ["DATABASE_URL"])
 ### Go
 
 ```go
-import "github.com/<org>/touchenv-go"
+import touchenv "github.com/cstar/touchenv-go"
 
 func main() {
     touchenv.Load()

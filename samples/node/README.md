@@ -6,12 +6,13 @@ Drop-in replacement for `dotenv`. Shows how to migrate an Express app from
 ## Prerequisites
 
 - Node.js 18+
-- touchenv CLI installed (`npm i -g touchenv`)
+- GitHub Packages registry configured in `.npmrc` (see [Getting Started](../../docs/getting-started.md))
+- touchenv CLI installed (`npm i -g touchenv --registry=https://npm.pkg.github.com/cstar`)
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (requires .npmrc with GPR registry for @touchenv packages)
 npm install
 
 # 2. Initialize touchenv and add secrets

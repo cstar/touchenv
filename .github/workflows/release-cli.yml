@@ -1,0 +1,84 @@
+name: Release CLI
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # Build Swift universal binary on macOS
+  build-swift:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build universal binary (arm64 + x86_64)
+        run: |
+          cd swift
+          swift build -c release --arch arm64 --arch x86_64
+
+      - name: Upload Swift binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: touchenv-keychain
+          path: swift/.build/apple/Products/Release/touchenv-keychain
+
+  # Build CLI and publish
+  release:
+    needs: build-swift
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+        env:
+          TOUCHENV_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+      - name: Download Swift binary
+        uses: actions/download-artifact@v4
+        with:
+          name: touchenv-keychain
+          path: cli/dist/bin
+
+      - name: Make Swift binary executable
+        run: chmod +x dist/bin/touchenv-keychain
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+
+      - name: Publish to GitHub Packages
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            cli/dist/bin/touchenv-keychain

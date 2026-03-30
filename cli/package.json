@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node --test test/**/*.test.ts --loader tsx",
+    "test": "node --test --import tsx test/**/*.test.ts",
     "lint": "eslint src/ test/"
   },
   "engines": {

@@ -25,7 +25,7 @@ touchenv/
 │   ├── Sources/touchenv-keychain/
 │   └── Tests/touchenv-keychainTests/
 ├── sdks/
-│   ├── node/               # @touchenv/node — drop-in for dotenv
+│   ├── node/               # @cstar/touchenv-node — drop-in for dotenv
 │   ├── python/             # touchenv — drop-in for python-dotenv
 │   └── go/                 # touchenv-go — drop-in for godotenv
 └── .github/workflows/      # CI

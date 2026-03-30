@@ -1,18 +1,18 @@
-# Node.js Sample — Express app with @touchenv/node
+# Node.js Sample — Express app with @cstar/touchenv-node
 
 Drop-in replacement for `dotenv`. Shows how to migrate an Express app from
-`require('dotenv').config()` to `require('@touchenv/node').config()`.
+`require('dotenv').config()` to `require('@cstar/touchenv-node').config()`.
 
 ## Prerequisites
 
 - Node.js 18+
 - GitHub Packages registry configured in `.npmrc` (see [Getting Started](../../docs/getting-started.md))
-- touchenv CLI installed (`npm i -g touchenv --registry=https://npm.pkg.github.com/cstar`)
+- touchenv CLI installed (`npm i -g @cstar/touchenv --registry=https://npm.pkg.github.com`)
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies (requires .npmrc with GPR registry for @touchenv packages)
+# 1. Install dependencies (requires .npmrc with GPR registry for @cstar packages)
 npm install
 
 # 2. Initialize touchenv and add secrets
@@ -38,7 +38,7 @@ console.log(process.env.DATABASE_URL);
 **After** (touchenv — one-line change):
 
 ```js
-require('@touchenv/node').config();
+require('@cstar/touchenv-node').config();
 console.log(process.env.DATABASE_URL);
 ```
 

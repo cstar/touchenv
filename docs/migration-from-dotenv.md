@@ -17,7 +17,7 @@ supported language.
 
 ```bash
 # Install the CLI
-npm install -g touchenv
+npm install -g @cstar/touchenv
 
 # Initialize (generates DEK, stores in Keychain)
 touchenv init
@@ -42,12 +42,12 @@ done < .env
 
 ```bash
 npm uninstall dotenv
-npm install @touchenv/node
+npm install @cstar/touchenv-node
 ```
 
 ```diff
 - require('dotenv').config()
-+ import { config } from '@touchenv/node';
++ import { config } from '@cstar/touchenv-node';
 + config();
 ```
 
@@ -55,7 +55,7 @@ Or if you use `dotenv/config` as a preload:
 
 ```diff
 - node -r dotenv/config app.js
-+ TOUCHENV_KEY="..." node -r @touchenv/node/config app.js
++ TOUCHENV_KEY="..." node -r @cstar/touchenv-node/config app.js
 ```
 
 The `config()` function accepts the same pattern:

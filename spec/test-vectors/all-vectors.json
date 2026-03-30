@@ -1,0 +1,84 @@
+{
+  "vectors": [
+    {
+      "name": "basic",
+      "description": "Simple key=value pairs with comments and blank lines",
+      "format_version": 1,
+      "encryption": "aes-256-gcm",
+      "dek": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "nonce": "aabbccddeeff00112233aabb",
+      "aad": "54454e56000101",
+      "plaintext": "# Database config\nDB_HOST=localhost\nDB_PORT=5432\nDB_NAME=myapp\n\n# App settings\nAPP_ENV=development\nDEBUG=true\nSECRET_KEY=s3cret\nEMPTY_VAL=\n",
+      "encrypted": "54454e56000101aabbccddeeff00112233aabb722f3c1bb501b089a71ef0bbcaf11faf13f40cc445907ece0100cc65c87ec84d3760a80c70ec4dd1b24a313523c4946912e66ce9e9260ee45a86dc64f4e394f2af42d329bf46a9cf004f39530a0a5d5a61d6acf5079e3a22630ed78dedba0b5d24f30f582b14cfd42d1a4a89f3255c4afae68fd6f6266db51fca716db01cd7758571a8c3235f9a4a812bc444006f903c88c61ece32a8d2e5cf143f",
+      "encrypted_base64": "VEVOVgABAaq7zN3u/wARIjOqu3IvPBu1AbCJpx7wu8rxH68T9AzERZB+zgEAzGXIfshNN2CoDHDsTdGySjE1I8SUaRLmbOnpJg7kWobcZPTjlPKvQtMpv0apzwBPOVMKCl1aYdas9QeeOiJjDteN7boLXSTzD1grFM/ULRpKifMlXEr65o/W9iZttR/KcW2wHNd1hXGowyNfmkqBK8REAG+QPIjGHs4yqNLlzxQ/",
+      "env": {
+        "DB_HOST": "localhost",
+        "DB_PORT": "5432",
+        "DB_NAME": "myapp",
+        "APP_ENV": "development",
+        "DEBUG": "true",
+        "SECRET_KEY": "s3cret",
+        "EMPTY_VAL": ""
+      }
+    },
+    {
+      "name": "multiline",
+      "description": "Double-quoted values with \\n, \\t, and other escape sequences",
+      "format_version": 1,
+      "encryption": "aes-256-gcm",
+      "dek": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "nonce": "112233445566778899aabbcc",
+      "aad": "54454e56000101",
+      "plaintext": "RSA_KEY=\"-----BEGIN RSA PRIVATE KEY-----\\nMIIEpAIBAAKCAQEA0Z3VS5JJcds3xfn\\nbase64encodeddata\\n-----END RSA PRIVATE KEY-----\"\nGREETING=\"Hello,\\tWorld!\\nWelcome to \\\"touchenv\\\".\"\nMULTI=\"line1\\nline2\\nline3\"\nESCAPED=\"backslash: \\\\ quote: \\\"\"\n",
+      "encrypted": "54454e56000101112233445566778899aabbccaf1310c74b7ceca22e751615ab3b1b2abc66765ac6fbe2d109157aa06114e352b97db6e110c6213d9ed9242cd88c1b3603d61b148f23e8ff19ac9005c6e18d0ee95fe063596b4a1b688b8aea15061462f66ee696ba2d47710c2784c569126ff6bf39b7801a6e05523f0ba1a51b6e5537cd926b0bd27af7856e8220771cbcc73e6a19bea51d3b8123285bcf80bdc3140d96448caa6ab79674598989c8904b0c104868badf040c3c48b52053be322985097c46cc80974e049b830dd9a907d9eb0260e4a38c649c303e85966927d7b6da75a4af7832ba74b9f2ce51a45643a97450825af120b3b3814b63479539750ea82d01da487bd60c1fb7ad4c8e5a843a67",
+      "encrypted_base64": "VEVOVgABAREiM0RVZneImaq7zK8TEMdLfOyiLnUWFas7Gyq8ZnZaxvvi0QkVeqBhFONSuX224RDGIT2e2SQs2IwbNgPWGxSPI+j/GayQBcbhjQ7pX+BjWWtKG2iLiuoVBhRi9m7mlrotR3EMJ4TFaRJv9r85t4AabgVSPwuhpRtuVTfNkmsL0nr3hW6CIHccvMc+ahm+pR07gSMoW8+AvcMUDZZEjKpqt5Z0WYmJyJBLDBBIaLrfBAw8SLUgU74yKYUJfEbMgJdOBJuDDdmpB9nrAmDko4xknDA+hZZpJ9e22nWkr3gyunS58s5RpFZDqXRQglrxILOzgUtjR5U5dQ6oLQHaSHvWDB+3rUyOWoQ6Zw==",
+      "env": {
+        "RSA_KEY": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA0Z3VS5JJcds3xfn\nbase64encodeddata\n-----END RSA PRIVATE KEY-----",
+        "GREETING": "Hello,\tWorld!\nWelcome to \"touchenv\".",
+        "MULTI": "line1\nline2\nline3",
+        "ESCAPED": "backslash: \\ quote: \""
+      }
+    },
+    {
+      "name": "unicode",
+      "description": "UTF-8 encoded values with emoji, CJK, accented, and RTL characters",
+      "format_version": 1,
+      "encryption": "aes-256-gcm",
+      "dek": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "nonce": "ffeeddccbbaa998877665544",
+      "aad": "54454e56000101",
+      "plaintext": "EMOJI=🔒🔐🔑\nJAPANESE=こんにちは世界\nACCENTED=café crème brûlée\nARABIC=مرحبا\nMATH=∀x ∈ ℤ: x² ≥ 0\nMIXED=hello-世界-🌍\n",
+      "encrypted": "54454e56000101ffeeddccbbaa9988776655446ec4209a125145be36e39c5cb96d90b9269da4bfd1076ab3eec9de0d534a8a003af510eb828145f957870cb6f67c352eccd39d3c9e3492d6a5a824b82bfce64ce4e4a874bc8aec29aa3ab654e343567bb7d406e96dfb1a2a948d3b26a121dac6f7617cdbe62da631b8867b1cbd12e2b284c71c6985907bb177b1c78ea7ec729ee7ab40e279a67a3258759a5db4e90771a377bea4ed1dc300c1c851e368585da9f60cb78b5e7241e0",
+      "encrypted_base64": "VEVOVgABAf/u3cy7qpmId2ZVRG7EIJoSUUW+NuOcXLltkLkmnaS/0Qdqs+7J3g1TSooAOvUQ64KBRflXhwy29nw1LszTnTyeNJLWpagkuCv85kzk5Kh0vIrsKao6tlTjQ1Z7t9QG6W37GiqUjTsmoSHaxvdhfNvmLaYxuIZ7HL0S4rKExxxphZB7sXexx46n7HKe56tA4nmmejJYdZpdtOkHcaN3vqTtHcMAwchR42hYXan2DLeLXnJB4A==",
+      "env": {
+        "EMOJI": "🔒🔐🔑",
+        "JAPANESE": "こんにちは世界",
+        "ACCENTED": "café crème brûlée",
+        "ARABIC": "مرحبا",
+        "MATH": "∀x ∈ ℤ: x² ≥ 0",
+        "MIXED": "hello-世界-🌍"
+      }
+    },
+    {
+      "name": "portable",
+      "description": "Exercises all dotenv parsing rules: unquoted, double-quoted, single-quoted, export prefix, duplicate keys",
+      "format_version": 1,
+      "encryption": "aes-256-gcm",
+      "dek": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "nonce": "000102030405060708090a0b",
+      "aad": "54454e56000101",
+      "plaintext": "# All parsing rule variants\nUNQUOTED=simple value\nDOUBLE_QUOTED=\"value with spaces\"\nSINGLE_QUOTED='literal $HOME \\n not expanded'\nexport EXPORTED=exported_value\nNO_VALUE=\n\n# Duplicate — last wins\nDUP=first\nDUP=second\n\n# Trimming\nTRIMMED=  spaces around\n",
+      "encrypted": "54454e56000101000102030405060708090a0bd72a20ec3b051df3a9fc4ba9211b101b7ba25a28c3ee751a7e9fa77cf61174d8ab89bbc649bc49f6431c995c9bd8000b5225421042493eeb4ceb5210314949321f855915080da0f527a91d360fa17542adb1d01505dc8b56f5b8c625f18545b491f76c86a07f9f3dfa082b398190a41535489be1ec89416d475f5e65808d8fbd48a81263c60168b7ef6bd1b750fc353a5daa1a7b44cbcfba3b5a46cabe88f72cbd1d69584f5b42891e67e82bd9df90edddd971f11394767ff2f046a9414652e6039857b5b5cea179672157292813ed4043c29f3bbc1f33a2e18853f98f36c1ec23d557f27c63a8f87df07d0eaf5c9ede0fe2be6d9afbe296542760caa9ac25da515f826ad185fea761c2500942a6b2",
+      "encrypted_base64": "VEVOVgABAQABAgMEBQYHCAkKC9cqIOw7BR3zqfxLqSEbEBt7oloow+51Gn6fp3z2EXTYq4m7xkm8SfZDHJlcm9gAC1IlQhBCST7rTOtSEDFJSTIfhVkVCA2g9SepHTYPoXVCrbHQFQXci1b1uMYl8YVFtJH3bIagf589+ggrOYGQpBU1SJvh7IlBbUdfXmWAjY+9SKgSY8YBaLfva9G3UPw1Ol2qGntEy8+6O1pGyr6I9yy9HWlYT1tCiR5n6CvZ35Dt3dlx8ROUdn/y8EapQUZS5gOYV7W1zqF5ZyFXKSgT7UBDwp87vB8zouGIU/mPNsHsI9VX8nxjqPh98H0Or1ye3g/ivm2a++KWVCdgyqmsJdpRX4Jq0YX+p2HCUAlCprI=",
+      "env": {
+        "UNQUOTED": "simple value",
+        "DOUBLE_QUOTED": "value with spaces",
+        "SINGLE_QUOTED": "literal $HOME \\n not expanded",
+        "EXPORTED": "exported_value",
+        "NO_VALUE": "",
+        "DUP": "second",
+        "TRIMMED": "spaces around"
+      }
+    }
+  ]
+}

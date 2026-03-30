@@ -1,0 +1,21 @@
+{
+  "name": "basic",
+  "description": "Simple key=value pairs with comments and blank lines",
+  "format_version": 1,
+  "encryption": "aes-256-gcm",
+  "dek": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "nonce": "aabbccddeeff00112233aabb",
+  "aad": "54454e56000101",
+  "plaintext": "# Database config\nDB_HOST=localhost\nDB_PORT=5432\nDB_NAME=myapp\n\n# App settings\nAPP_ENV=development\nDEBUG=true\nSECRET_KEY=s3cret\nEMPTY_VAL=\n",
+  "encrypted": "54454e56000101aabbccddeeff00112233aabb722f3c1bb501b089a71ef0bbcaf11faf13f40cc445907ece0100cc65c87ec84d3760a80c70ec4dd1b24a313523c4946912e66ce9e9260ee45a86dc64f4e394f2af42d329bf46a9cf004f39530a0a5d5a61d6acf5079e3a22630ed78dedba0b5d24f30f582b14cfd42d1a4a89f3255c4afae68fd6f6266db51fca716db01cd7758571a8c3235f9a4a812bc444006f903c88c61ece32a8d2e5cf143f",
+  "encrypted_base64": "VEVOVgABAaq7zN3u/wARIjOqu3IvPBu1AbCJpx7wu8rxH68T9AzERZB+zgEAzGXIfshNN2CoDHDsTdGySjE1I8SUaRLmbOnpJg7kWobcZPTjlPKvQtMpv0apzwBPOVMKCl1aYdas9QeeOiJjDteN7boLXSTzD1grFM/ULRpKifMlXEr65o/W9iZttR/KcW2wHNd1hXGowyNfmkqBK8REAG+QPIjGHs4yqNLlzxQ/",
+  "env": {
+    "DB_HOST": "localhost",
+    "DB_PORT": "5432",
+    "DB_NAME": "myapp",
+    "APP_ENV": "development",
+    "DEBUG": "true",
+    "SECRET_KEY": "s3cret",
+    "EMPTY_VAL": ""
+  }
+}

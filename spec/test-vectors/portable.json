@@ -1,0 +1,21 @@
+{
+  "name": "portable",
+  "description": "Exercises all dotenv parsing rules: unquoted, double-quoted, single-quoted, export prefix, duplicate keys",
+  "format_version": 1,
+  "encryption": "aes-256-gcm",
+  "dek": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+  "nonce": "000102030405060708090a0b",
+  "aad": "54454e56000101",
+  "plaintext": "# All parsing rule variants\nUNQUOTED=simple value\nDOUBLE_QUOTED=\"value with spaces\"\nSINGLE_QUOTED='literal $HOME \\n not expanded'\nexport EXPORTED=exported_value\nNO_VALUE=\n\n# Duplicate — last wins\nDUP=first\nDUP=second\n\n# Trimming\nTRIMMED=  spaces around\n",
+  "encrypted": "54454e56000101000102030405060708090a0bd72a20ec3b051df3a9fc4ba9211b101b7ba25a28c3ee751a7e9fa77cf61174d8ab89bbc649bc49f6431c995c9bd8000b5225421042493eeb4ceb5210314949321f855915080da0f527a91d360fa17542adb1d01505dc8b56f5b8c625f18545b491f76c86a07f9f3dfa082b398190a41535489be1ec89416d475f5e65808d8fbd48a81263c60168b7ef6bd1b750fc353a5daa1a7b44cbcfba3b5a46cabe88f72cbd1d69584f5b42891e67e82bd9df90edddd971f11394767ff2f046a9414652e6039857b5b5cea179672157292813ed4043c29f3bbc1f33a2e18853f98f36c1ec23d557f27c63a8f87df07d0eaf5c9ede0fe2be6d9afbe296542760caa9ac25da515f826ad185fea761c2500942a6b2",
+  "encrypted_base64": "VEVOVgABAQABAgMEBQYHCAkKC9cqIOw7BR3zqfxLqSEbEBt7oloow+51Gn6fp3z2EXTYq4m7xkm8SfZDHJlcm9gAC1IlQhBCST7rTOtSEDFJSTIfhVkVCA2g9SepHTYPoXVCrbHQFQXci1b1uMYl8YVFtJH3bIagf589+ggrOYGQpBU1SJvh7IlBbUdfXmWAjY+9SKgSY8YBaLfva9G3UPw1Ol2qGntEy8+6O1pGyr6I9yy9HWlYT1tCiR5n6CvZ35Dt3dlx8ROUdn/y8EapQUZS5gOYV7W1zqF5ZyFXKSgT7UBDwp87vB8zouGIU/mPNsHsI9VX8nxjqPh98H0Or1ye3g/ivm2a++KWVCdgyqmsJdpRX4Jq0YX+p2HCUAlCprI=",
+  "env": {
+    "UNQUOTED": "simple value",
+    "DOUBLE_QUOTED": "value with spaces",
+    "SINGLE_QUOTED": "literal $HOME \\n not expanded",
+    "EXPORTED": "exported_value",
+    "NO_VALUE": "",
+    "DUP": "second",
+    "TRIMMED": "spaces around"
+  }
+}

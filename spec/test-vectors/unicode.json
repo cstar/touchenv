@@ -1,0 +1,20 @@
+{
+  "name": "unicode",
+  "description": "UTF-8 encoded values with emoji, CJK, accented, and RTL characters",
+  "format_version": 1,
+  "encryption": "aes-256-gcm",
+  "dek": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+  "nonce": "ffeeddccbbaa998877665544",
+  "aad": "54454e56000101",
+  "plaintext": "EMOJI=🔒🔐🔑\nJAPANESE=こんにちは世界\nACCENTED=café crème brûlée\nARABIC=مرحبا\nMATH=∀x ∈ ℤ: x² ≥ 0\nMIXED=hello-世界-🌍\n",
+  "encrypted": "54454e56000101ffeeddccbbaa9988776655446ec4209a125145be36e39c5cb96d90b9269da4bfd1076ab3eec9de0d534a8a003af510eb828145f957870cb6f67c352eccd39d3c9e3492d6a5a824b82bfce64ce4e4a874bc8aec29aa3ab654e343567bb7d406e96dfb1a2a948d3b26a121dac6f7617cdbe62da631b8867b1cbd12e2b284c71c6985907bb177b1c78ea7ec729ee7ab40e279a67a3258759a5db4e90771a377bea4ed1dc300c1c851e368585da9f60cb78b5e7241e0",
+  "encrypted_base64": "VEVOVgABAf/u3cy7qpmId2ZVRG7EIJoSUUW+NuOcXLltkLkmnaS/0Qdqs+7J3g1TSooAOvUQ64KBRflXhwy29nw1LszTnTyeNJLWpagkuCv85kzk5Kh0vIrsKao6tlTjQ1Z7t9QG6W37GiqUjTsmoSHaxvdhfNvmLaYxuIZ7HL0S4rKExxxphZB7sXexx46n7HKe56tA4nmmejJYdZpdtOkHcaN3vqTtHcMAwchR42hYXan2DLeLXnJB4A==",
+  "env": {
+    "EMOJI": "🔒🔐🔑",
+    "JAPANESE": "こんにちは世界",
+    "ACCENTED": "café crème brûlée",
+    "ARABIC": "مرحبا",
+    "MATH": "∀x ∈ ℤ: x² ≥ 0",
+    "MIXED": "hello-世界-🌍"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "multiline",
+  "description": "Double-quoted values with \\n, \\t, and other escape sequences",
+  "format_version": 1,
+  "encryption": "aes-256-gcm",
+  "dek": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "nonce": "112233445566778899aabbcc",
+  "aad": "54454e56000101",
+  "plaintext": "RSA_KEY=\"-----BEGIN RSA PRIVATE KEY-----\\nMIIEpAIBAAKCAQEA0Z3VS5JJcds3xfn\\nbase64encodeddata\\n-----END RSA PRIVATE KEY-----\"\nGREETING=\"Hello,\\tWorld!\\nWelcome to \\\"touchenv\\\".\"\nMULTI=\"line1\\nline2\\nline3\"\nESCAPED=\"backslash: \\\\ quote: \\\"\"\n",
+  "encrypted": "54454e56000101112233445566778899aabbccaf1310c74b7ceca22e751615ab3b1b2abc66765ac6fbe2d109157aa06114e352b97db6e110c6213d9ed9242cd88c1b3603d61b148f23e8ff19ac9005c6e18d0ee95fe063596b4a1b688b8aea15061462f66ee696ba2d47710c2784c569126ff6bf39b7801a6e05523f0ba1a51b6e5537cd926b0bd27af7856e8220771cbcc73e6a19bea51d3b8123285bcf80bdc3140d96448caa6ab79674598989c8904b0c104868badf040c3c48b52053be322985097c46cc80974e049b830dd9a907d9eb0260e4a38c649c303e85966927d7b6da75a4af7832ba74b9f2ce51a45643a97450825af120b3b3814b63479539750ea82d01da487bd60c1fb7ad4c8e5a843a67",
+  "encrypted_base64": "VEVOVgABAREiM0RVZneImaq7zK8TEMdLfOyiLnUWFas7Gyq8ZnZaxvvi0QkVeqBhFONSuX224RDGIT2e2SQs2IwbNgPWGxSPI+j/GayQBcbhjQ7pX+BjWWtKG2iLiuoVBhRi9m7mlrotR3EMJ4TFaRJv9r85t4AabgVSPwuhpRtuVTfNkmsL0nr3hW6CIHccvMc+ahm+pR07gSMoW8+AvcMUDZZEjKpqt5Z0WYmJyJBLDBBIaLrfBAw8SLUgU74yKYUJfEbMgJdOBJuDDdmpB9nrAmDko4xknDA+hZZpJ9e22nWkr3gyunS58s5RpFZDqXRQglrxILOzgUtjR5U5dQ6oLQHaSHvWDB+3rUyOWoQ6Zw==",
+  "env": {
+    "RSA_KEY": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA0Z3VS5JJcds3xfn\nbase64encodeddata\n-----END RSA PRIVATE KEY-----",
+    "GREETING": "Hello,\tWorld!\nWelcome to \"touchenv\".",
+    "MULTI": "line1\nline2\nline3",
+    "ESCAPED": "backslash: \\ quote: \""
+  }
+}

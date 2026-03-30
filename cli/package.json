@@ -16,11 +16,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@noble/hashes": "^2.0.1",
     "commander": "^12.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
     "tsx": "^4.0.0",
-    "@types/node": "^20.0.0"
+    "typescript": "^5.4.0"
   }
 }

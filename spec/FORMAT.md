@@ -146,9 +146,12 @@ EXPORT_PREFIX=exported    # export KEY=value also valid
 8. Duplicate keys: last value wins
 9. Keys: `[A-Za-z_][A-Za-z0-9_]*`
 
-## Portable Format (v2, future)
+## Portable Format (v2)
 
-Phase 5 adds password-based portable files for sharing across machines:
+Version 2 adds password-based portable files for sharing across machines
+without requiring access to the Keychain or `TOUCHENV_KEY`.
+
+### File Layout
 
 ```
 Offset  Size       Field
@@ -161,10 +164,63 @@ Offset  Size       Field
 EOF-16  16         tag         GCM authentication tag
 ```
 
-The DEK is derived from a password using Argon2id:
+**Total overhead**: 51 bytes (6 magic + 1 version + 16 salt + 12 nonce + 16 tag).
+
+### Key Derivation
+
+The DEK is derived from a user-supplied password using Argon2id:
 
 ```
-DEK = Argon2id(password, salt, m=65536, t=3, p=4)
+DEK = Argon2id(password, salt, m=65536, t=3, p=4, dkLen=32)
 ```
 
-This section is informational. Version 0x02 is not yet implemented.
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| `m`       | 65536 | 64 MiB memory cost |
+| `t`       | 3     | 3 iterations (time cost) |
+| `p`       | 4     | 4 parallel lanes |
+| `dkLen`   | 32    | 256-bit output key |
+
+### Encryption
+
+```
+salt       = random(16)
+DEK        = Argon2id(password, salt, m=65536, t=3, p=4, dkLen=32)
+AAD        = magic || version                (7 bytes)
+nonce      = random(12)
+plaintext  = read_utf8(".env")
+(ciphertext, tag) = AES-256-GCM-Encrypt(key=DEK, nonce, AAD, plaintext)
+output     = magic || version || salt || nonce || ciphertext || tag
+```
+
+### Decryption
+
+```
+magic      = input[0..6]                     → verify == "TENV\x00\x02"
+version    = input[6]                        → verify == 0x02
+salt       = input[7..23]
+nonce      = input[23..35]
+ciphertext = input[35..len-16]
+tag        = input[len-16..len]
+AAD        = magic || version                (7 bytes)
+DEK        = Argon2id(password, salt, m=65536, t=3, p=4, dkLen=32)
+plaintext  = AES-256-GCM-Decrypt(key=DEK, nonce, AAD, ciphertext, tag)
+```
+
+### Usage
+
+```bash
+# Export current .env.encrypted as a password-protected portable file
+touchenv export -o secrets.portable
+
+# Import a portable file (re-encrypts with local DEK)
+touchenv import secrets.portable
+
+# Decrypt portable file to stdout without re-encrypting
+touchenv import secrets.portable --stdout
+```
+
+### Non-interactive Mode
+
+For CI/headless environments, set `TOUCHENV_PASSWORD` to bypass the
+interactive password prompt.

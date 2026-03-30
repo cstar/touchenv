@@ -7,6 +7,8 @@ import { setCommand } from './commands/set.js';
 import { getCommand } from './commands/get.js';
 import { listCommand } from './commands/list.js';
 import { decryptCommand } from './commands/decrypt.js';
+import { exportCommand } from './commands/export.js';
+import { importCommand } from './commands/import.js';
 
 const program = new Command()
   .name('touchenv')
@@ -19,6 +21,8 @@ program.addCommand(setCommand);
 program.addCommand(getCommand);
 program.addCommand(listCommand);
 program.addCommand(decryptCommand);
+program.addCommand(exportCommand);
+program.addCommand(importCommand);
 
 program.parseAsync().catch((err: Error) => {
   console.error(`error: ${err.message}`);

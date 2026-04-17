@@ -10,9 +10,24 @@ permissions:
   packages: write
 
 jobs:
-  # Build Swift universal binary on macOS
+  # Build, sign, and notarize Swift universal binary on macOS.
+  #
+  # Required repo secrets for signing:
+  #   MACOS_CERT_P12_BASE64  — base64 of exported Developer ID Application .p12
+  #   MACOS_CERT_PASSWORD    — .p12 export password
+  #   MACOS_CERT_IDENTITY    — cert common name, e.g. "Developer ID Application: Foo (TEAMID)"
+  #   APPLE_TEAM_ID          — 10-char Apple Developer team ID
+  #   APPLE_ID               — Apple ID email for notarization
+  #   APPLE_ID_PASSWORD      — app-specific password (appleid.apple.com → Security)
   build-swift:
     runs-on: macos-14
+    env:
+      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+      MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      MACOS_CERT_IDENTITY: ${{ secrets.MACOS_CERT_IDENTITY }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +35,49 @@ jobs:
         run: |
           cd swift
           swift build -c release --arch arm64 --arch x86_64
+
+      - name: Import Developer ID certificate
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/sign.keychain-db"
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "$MACOS_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" \
+            -P "$MACOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" \
+            $(security list-keychain -d user | tr -d '" ')
+          rm "$RUNNER_TEMP/cert.p12"
+
+      - name: Sign binary with hardened runtime
+        run: |
+          set -euo pipefail
+          BIN=swift/.build/apple/Products/Release/touchenv-keychain
+          codesign --sign "$MACOS_CERT_IDENTITY" \
+            --entitlements swift/touchenv-keychain.entitlements \
+            --options runtime \
+            --timestamp \
+            --force \
+            "$BIN"
+          codesign --verify --strict --verbose=2 "$BIN"
+          codesign --display --verbose=4 "$BIN"
+
+      - name: Notarize binary
+        run: |
+          set -euo pipefail
+          BIN=swift/.build/apple/Products/Release/touchenv-keychain
+          ZIP="$RUNNER_TEMP/touchenv-keychain.zip"
+          ditto -c -k --keepParent "$BIN" "$ZIP"
+          xcrun notarytool submit "$ZIP" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_ID_PASSWORD" \
+            --wait
+          # Raw CLI binaries cannot be stapled — Gatekeeper verifies online.
 
       - name: Upload Swift binary
         uses: actions/upload-artifact@v4

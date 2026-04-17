@@ -1,6 +1,12 @@
 // touchenv-keychain: macOS Keychain manager for touchenv DEKs
 // Commands: store, retrieve, delete, exists
-// Uses kSecAccessControlBiometryCurrentSet for Secure Enclave protection
+// Stores items in the user's login keychain with
+// kSecAttrAccessibleWhenUnlockedThisDeviceOnly. The DEK is encrypted at rest
+// and only accessible while the session is unlocked (screen-lock gate).
+// Per-access biometry prompts are not used: that path requires a
+// provisioning-profile-bound "keychain-access-groups" entitlement, which
+// Developer ID-signed CLI tools (as distributed outside the App Store)
+// cannot carry.
 
 import Foundation
 import Security
@@ -14,7 +20,6 @@ enum KeychainError: Error, CustomStringConvertible {
     case retrieve(OSStatus)
     case delete(OSStatus)
     case notFound
-    case accessControlCreation
     case unexpectedData
 
     var description: String {
@@ -27,8 +32,6 @@ enum KeychainError: Error, CustomStringConvertible {
             return "keychain delete failed: \(status) (\(secErrorMessage(status)))"
         case .notFound:
             return "key not found"
-        case .accessControlCreation:
-            return "failed to create access control"
         case .unexpectedData:
             return "unexpected data format in keychain"
         }
@@ -42,17 +45,12 @@ func secErrorMessage(_ status: OSStatus) -> String {
     return "unknown"
 }
 
-func createAccessControl() throws -> SecAccessControl {
-    var error: Unmanaged<CFError>?
-    guard let access = SecAccessControlCreateWithFlags(
-        kCFAllocatorDefault,
-        kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-        .biometryCurrentSet,
-        &error
-    ) else {
-        throw KeychainError.accessControlCreation
-    }
-    return access
+func baseQuery(account: String) -> [String: Any] {
+    return [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrService as String: service,
+        kSecAttrAccount as String: account,
+    ]
 }
 
 func store(account: String, hexKey: String) throws {
@@ -61,67 +59,28 @@ func store(account: String, hexKey: String) throws {
     }
 
     // Delete existing item first (ignore error if not found)
-    let deleteQuery: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: service,
-        kSecAttrAccount as String: account,
-    ]
-    SecItemDelete(deleteQuery as CFDictionary)
+    SecItemDelete(baseQuery(account: account) as CFDictionary)
 
-    // Try biometry-gated access first. Requires a properly code-signed
-    // binary (Developer ID with keychain-access-groups entitlement).
-    // Fall back to a plain login-keychain item if the entitlement is
-    // missing — Keychain is still encrypted at rest and unlocked by the
-    // user's login password. This makes the tool usable when installed
-    // from a locally-built or ad-hoc signed binary (e.g. `npm install`
-    // of an un-notarized release).
-    let access = try createAccessControl()
-    let gatedQuery: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: service,
-        kSecAttrAccount as String: account,
-        kSecValueData as String: data,
-        kSecAttrAccessControl as String: access,
-    ]
+    var addQuery = baseQuery(account: account)
+    addQuery[kSecValueData as String] = data
+    addQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
 
-    var status = SecItemAdd(gatedQuery as CFDictionary, nil)
-    if status == errSecMissingEntitlement {
-        FileHandle.standardError.write(Data(
-            "warning: biometry gate unavailable (binary not signed with keychain entitlement); falling back to login-keychain access\n".utf8
-        ))
-        let plainQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-        ]
-        status = SecItemAdd(plainQuery as CFDictionary, nil)
-    }
-
+    let status = SecItemAdd(addQuery as CFDictionary, nil)
     guard status == errSecSuccess else {
         throw KeychainError.store(status)
     }
 }
 
 func retrieve(account: String) throws -> String {
-    let query: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: service,
-        kSecAttrAccount as String: account,
-        kSecReturnData as String: true,
-        kSecMatchLimit as String: kSecMatchLimitOne,
-    ]
+    var query = baseQuery(account: account)
+    query[kSecReturnData as String] = true
+    query[kSecMatchLimit as String] = kSecMatchLimitOne
 
     var item: CFTypeRef?
     let status = SecItemCopyMatching(query as CFDictionary, &item)
 
-    guard status != errSecItemNotFound else {
-        throw KeychainError.notFound
-    }
-    guard status == errSecSuccess else {
-        throw KeychainError.retrieve(status)
-    }
+    guard status != errSecItemNotFound else { throw KeychainError.notFound }
+    guard status == errSecSuccess else { throw KeychainError.retrieve(status) }
     guard let data = item as? Data,
           let hexKey = String(data: data, encoding: .utf8) else {
         throw KeychainError.unexpectedData
@@ -130,28 +89,16 @@ func retrieve(account: String) throws -> String {
 }
 
 func delete(account: String) throws {
-    let query: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: service,
-        kSecAttrAccount as String: account,
-    ]
-
-    let status = SecItemDelete(query as CFDictionary)
+    let status = SecItemDelete(baseQuery(account: account) as CFDictionary)
     guard status == errSecSuccess || status == errSecItemNotFound else {
         throw KeychainError.delete(status)
     }
 }
 
 func exists(account: String) -> Bool {
-    let query: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: service,
-        kSecAttrAccount as String: account,
-        kSecReturnData as String: false,
-    ]
-
-    let status = SecItemCopyMatching(query as CFDictionary, nil)
-    return status == errSecSuccess
+    var query = baseQuery(account: account)
+    query[kSecReturnData as String] = false
+    return SecItemCopyMatching(query as CFDictionary, nil) == errSecSuccess
 }
 
 // MARK: - CLI

@@ -72,15 +72,21 @@ Swift binary:
 |----------|-------|
 | Service | `com.touchenv` |
 | Account | Absolute path to project directory |
-| Access Control | `kSecAccessControlBiometryCurrentSet` |
+| Accessibility | `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` |
+| Signing | Developer ID Application + hardened runtime + notarized |
 
-**Secure Enclave protection**: the access control flag requires biometric
-authentication (Touch ID / Face ID) to read the key. The key is:
+**Login-keychain protection**: the DEK is stored in the user's login keychain,
+encrypted at rest with the user's login password. It is:
 
-- Bound to the current set of enrolled biometrics (re-enrolling a fingerprint
-  invalidates access)
-- Never exported from the Secure Enclave in plaintext
-- Not accessible by other applications without biometric approval
+- Accessible only while the session is unlocked (screen-lock gates access)
+- Tied to the current device (`ThisDeviceOnly` prevents iCloud sync)
+- Not included in Time Machine backups of the keychain
+- Not accessible by other users on the same machine
+
+**Per-access biometry (Touch ID / Face ID)**: not used. That path requires a
+`keychain-access-groups` entitlement, which in turn requires a provisioning
+profile that Developer ID-signed CLI tools (distributed outside the App Store)
+cannot carry. Touch ID still indirectly gates access by unlocking the session.
 
 ### Storage: `TOUCHENV_KEY` environment variable
 
@@ -157,8 +163,8 @@ Keep backups if you need to access historical encrypted files.
 
 ## Recommendations
 
-1. **Use Keychain on dev machines.** Secure Enclave biometrics are stronger than
-   any env var.
+1. **Use Keychain on dev machines.** Login-keychain storage is stronger than
+   a plain env var — the DEK is encrypted at rest and session-unlock gated.
 2. **Rotate keys on team changes.** When someone leaves the team, generate a new
    DEK and re-encrypt.
 3. **Don't log decrypted values.** Check your logging config and CI scripts.

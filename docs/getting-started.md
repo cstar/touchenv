@@ -6,7 +6,7 @@ file, and loading secrets in your application.
 ## Prerequisites
 
 - **Node.js 20+** (for the CLI and Node SDK)
-- **macOS** (for Keychain/Secure Enclave support) -- or set `TOUCHENV_KEY` on Linux/CI
+- **macOS** (for login Keychain support) -- or set `TOUCHENV_KEY` on Linux/CI
 
 ## 1. Install the CLI
 
@@ -33,11 +33,13 @@ touchenv init
 This does two things:
 
 1. **Generates a DEK** (256-bit random key)
-2. **Stores the DEK** in your macOS Keychain, protected by Secure Enclave
-   biometrics (Touch ID)
+2. **Stores the DEK** in your macOS login Keychain with
+   `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` — the DEK is encrypted at
+   rest and only readable while your session is unlocked
 
-You'll be prompted for Touch ID the first time. After that, the key is
-associated with your project directory.
+The key is associated with your project directory (the absolute path is the
+Keychain account). When your screen locks, the login Keychain locks too,
+gating DEK access until you unlock the session (via password or Touch ID).
 
 If you're on Linux or in CI, set `TOUCHENV_KEY` instead:
 

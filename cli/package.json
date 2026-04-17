@@ -1,6 +1,6 @@
 {
   "name": "@escapevelocityoperations/touchenv",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Encrypted .env file manager",
   "type": "module",
   "bin": {

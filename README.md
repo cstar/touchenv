@@ -1,7 +1,7 @@
 # touchenv
 
 Encrypted `.env` file manager. Encrypt environment variables at rest with
-AES-256-GCM and unlock them via macOS Keychain (Secure Enclave) or a CI-friendly
+AES-256-GCM and unlock them via the macOS login Keychain or a CI-friendly
 environment variable.
 
 ## Why touchenv?
@@ -11,7 +11,7 @@ copied to insecure backups. touchenv replaces `.env` with `.env.encrypted` so
 your secrets are encrypted at rest while your workflow stays the same.
 
 - **AES-256-GCM** encryption with authenticated headers
-- **macOS Keychain** integration (Secure Enclave biometrics) for local development
+- **macOS login Keychain** integration (session-unlock gated) for local development
 - **`TOUCHENV_KEY`** env var for CI/CD and headless servers
 - **Drop-in SDKs** for Node.js, Python, and Go -- swap one import and you're done
 - **Cross-language test vectors** guarantee every SDK decrypts identically
@@ -141,7 +141,7 @@ platform-specific setup (GitHub Actions, GitLab CI, etc.).
 ```
 
 The DEK (Data Encryption Key) is stored in:
-- **macOS Keychain** (local dev) -- protected by Secure Enclave biometrics
+- **macOS login Keychain** (local dev) -- encrypted at rest, accessible only while the user session is unlocked (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`)
 - **`TOUCHENV_KEY` env var** (CI) -- set in your pipeline's secret store
 
 ## Development

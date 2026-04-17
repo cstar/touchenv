@@ -107,9 +107,9 @@ final class TouchenvKeychainTests: XCTestCase {
     }
 
     // MARK: - Keychain Integration (requires Keychain access)
-    // Note: store/retrieve/delete with biometric ACL require user interaction
-    // and cannot run in headless CI. These tests validate the CLI plumbing
-    // but will fail on CI unless Keychain prompts are allowed.
+    // Note: store/retrieve/delete require a writable login keychain. These
+    // tests validate the CLI plumbing and may fail on headless CI unless the
+    // keychain is initialized.
 
     func testExistsReturnsFalseForMissing() {
         let result = run(arguments: ["exists", testAccount])

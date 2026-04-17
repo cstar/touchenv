@@ -8,7 +8,7 @@
 
 touchenv encrypts `.env` files at rest using AES-256-GCM with a 256-bit Data
 Encryption Key (DEK). The DEK is stored in the macOS Keychain (protected by
-Secure Enclave biometrics) or supplied via the `TOUCHENV_KEY` environment
+login Keychain) or supplied via the `TOUCHENV_KEY` environment
 variable for headless/CI contexts.
 
 ## File Layout
@@ -105,7 +105,7 @@ The DEK is stored via the `touchenv-keychain` Swift binary:
 
 - **Service**: `com.touchenv`
 - **Account**: absolute path to the project directory
-- **Access Control**: `kSecAccessControlBiometryCurrentSet` (Secure Enclave)
+- **Accessibility**: `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`
 - **Encoding**: hex string
 
 ### TOUCHENV_KEY Environment Variable

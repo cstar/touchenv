@@ -23,21 +23,14 @@ Copy this value into your CI platform's secret store.
 
 ## Installing touchenv in CI
 
-touchenv packages are published to GitHub Packages Registry (GPR). Your CI
-pipeline needs GPR auth to install the CLI and SDKs.
-
 ### npm packages (CLI and Node SDK)
 
-Add a `.npmrc` to your repo (or generate one in CI):
+Public packages on npmjs.org. No auth needed:
 
-```ini
-@cstar:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```bash
+npm install -g @escapevelocityoperations/touchenv
+npm install @escapevelocityoperations/touchenv-node
 ```
-
-In GitHub Actions, `GITHUB_TOKEN` provides automatic GPR access. For other CI
-platforms, create a GitHub PAT with `read:packages` scope and store it as a
-secret.
 
 ### Python SDK
 
@@ -91,10 +84,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://npm.pkg.github.com"
       - run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm test
       # process.env is populated from .env.encrypted automatically
 ```

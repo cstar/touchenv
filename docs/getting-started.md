@@ -10,28 +10,18 @@ file, and loading secrets in your application.
 
 ## 1. Install the CLI
 
-touchenv is published to [GitHub Packages](https://github.com/cstar/touchenv/packages).
-You need to configure npm to use the GPR registry, then authenticate with a
-GitHub personal access token (PAT) that has `read:packages` scope.
+touchenv is published to [npm](https://www.npmjs.com/package/@escapevelocityoperations/touchenv).
 
-**Set up `.npmrc`:**
-
-```ini
-# ~/.npmrc (global) or .npmrc (project-level)
-@cstar:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
-
-**Install:**
+**Install globally:**
 
 ```bash
-npm install -g @cstar/touchenv --registry=https://npm.pkg.github.com
+npm install -g @escapevelocityoperations/touchenv
 ```
 
 Or use it locally in your project:
 
 ```bash
-npm install --save-dev @cstar/touchenv --registry=https://npm.pkg.github.com
+npm install --save-dev @escapevelocityoperations/touchenv
 ```
 
 ## 2. Initialize an encrypted env file
@@ -95,15 +85,13 @@ Install the SDK for your language and replace your dotenv import.
 
 ### Node.js
 
-With the `.npmrc` registry config from step 1 in place:
-
 ```bash
-npm install @cstar/touchenv-node
+npm install @escapevelocityoperations/touchenv-node
 ```
 
 ```js
 // Replace: require('dotenv').config()
-import { config } from '@cstar/touchenv-node';
+import { config } from '@escapevelocityoperations/touchenv-node';
 config();
 
 // process.env.DATABASE_URL is now available

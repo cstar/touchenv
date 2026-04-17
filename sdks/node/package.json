@@ -1,5 +1,5 @@
 {
-  "name": "@cstar/touchenv-node",
+  "name": "@escapevelocityoperations/touchenv-node",
   "version": "0.1.1",
   "description": "touchenv SDK for Node.js — drop-in dotenv replacement",
   "type": "module",

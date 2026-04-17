@@ -1,5 +1,5 @@
 {
-  "name": "@cstar/touchenv",
+  "name": "@escapevelocityoperations/touchenv",
   "version": "0.1.1",
   "description": "Encrypted .env file manager",
   "type": "module",

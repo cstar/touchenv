@@ -3,10 +3,16 @@
 Shows the full touchenv CLI workflow: initialize, set secrets, query them,
 edit interactively, and decrypt for piping.
 
+Uses the **local CLI build** at `../../cli/dist/cli.js` — no global install
+needed.
+
 ## Prerequisites
 
-- Node.js 18+
-- touchenv CLI installed (`npm i -g @cstar/touchenv`)
+- Node.js 20+
+- CLI built locally:
+  ```bash
+  (cd ../../cli && npm install && npm run build)
+  ```
 
 ## Quick Start
 
@@ -58,4 +64,4 @@ echo ".env" >> .gitignore
 
 ## Files
 
-- `demo.sh` — Interactive demo of all CLI commands
+- `demo.sh` — Interactive demo of all CLI commands (uses local CLI build)

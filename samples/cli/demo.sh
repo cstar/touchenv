@@ -3,9 +3,26 @@
 #
 # Usage: ./demo.sh
 #
-# This script demonstrates the complete touchenv workflow:
-# init → set → get → list → decrypt → edit
+# Uses local CLI build at ../../cli/dist/cli.js (no global install required).
+# Run `(cd ../../cli && npm install && npm run build)` once before this.
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLI="$SCRIPT_DIR/../../cli/dist/cli.js"
+KEYCHAIN_BIN_DIR="$SCRIPT_DIR/../../cli/dist/bin"
+
+if [[ ! -f "$CLI" ]]; then
+  echo "error: CLI not built. Run: (cd $SCRIPT_DIR/../../cli && npm install && npm run build)" >&2
+  exit 1
+fi
+
+# Put bundled touchenv-keychain on PATH so CLI can access macOS Keychain.
+# On non-macOS or CI, set TOUCHENV_KEY and this is not used.
+if [[ -d "$KEYCHAIN_BIN_DIR" ]]; then
+  export PATH="$KEYCHAIN_BIN_DIR:$PATH"
+fi
+
+touchenv() { node "$CLI" "$@"; }
 
 DEMO_DIR=$(mktemp -d)
 trap 'rm -rf "$DEMO_DIR"' EXIT

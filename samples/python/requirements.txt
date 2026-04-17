@@ -1,2 +1,2 @@
-touchenv @ https://github.com/cstar/touchenv/releases/download/python-v0.1.0/touchenv-0.1.0-py3-none-any.whl
+-e ../../sdks/python
 flask>=3.0.0

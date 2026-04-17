@@ -1,7 +1,7 @@
 // One-line migration from dotenv:
 //   Before: require('dotenv').config()
-//   After:  require('@cstar/touchenv-node').config()
-const { config } = require("@cstar/touchenv-node");
+//   After:  require('@escapevelocityoperations/touchenv-node').config()
+const { config } = require("@escapevelocityoperations/touchenv-node");
 
 const { parsed, error } = config();
 

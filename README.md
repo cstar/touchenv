@@ -19,11 +19,8 @@ your secrets are encrypted at rest while your workflow stays the same.
 ## Quick Start
 
 ```bash
-# Configure npm to use GitHub Packages for @cstar packages
-echo "@cstar:registry=https://npm.pkg.github.com" >> .npmrc
-
-# Install the CLI
-npm install -g @cstar/touchenv --registry=https://npm.pkg.github.com
+# Install the CLI from npm
+npm install -g @escapevelocityoperations/touchenv
 
 # Initialize a new encrypted env file (generates a DEK, stores in Keychain)
 touchenv init
@@ -52,10 +49,8 @@ application reads `.env.encrypted` instead of `.env` with a one-line change.
 
 ### Node.js
 
-Requires `.npmrc` with GPR registry (see [Getting Started](docs/getting-started.md)):
-
 ```bash
-npm install @cstar/touchenv-node
+npm install @escapevelocityoperations/touchenv-node
 ```
 
 ```js
@@ -63,7 +58,7 @@ npm install @cstar/touchenv-node
 // require('dotenv').config()
 
 // After:
-import { config } from '@cstar/touchenv-node';
+import { config } from '@escapevelocityoperations/touchenv-node';
 config();
 // process.env is now populated from .env.encrypted
 ```

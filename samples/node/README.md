@@ -1,27 +1,34 @@
-# Node.js Sample — Express app with @cstar/touchenv-node
+# Node.js Sample — Express app with touchenv-node
 
 Drop-in replacement for `dotenv`. Shows how to migrate an Express app from
-`require('dotenv').config()` to `require('@cstar/touchenv-node').config()`.
+`require('dotenv').config()` to `require('@escapevelocityoperations/touchenv-node').config()`.
+
+This sample consumes the SDK via a **relative path** (`file:../../sdks/node`)
+so it runs against the local source — no registry install needed.
 
 ## Prerequisites
 
-- Node.js 18+
-- GitHub Packages registry configured in `.npmrc` (see [Getting Started](../../docs/getting-started.md))
-- touchenv CLI installed (`npm i -g @cstar/touchenv --registry=https://npm.pkg.github.com`)
+- Node.js 20+
+- CLI built locally: `cd ../../cli && npm install && npm run build`
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies (requires .npmrc with GPR registry for @cstar packages)
+# 1. Build the local SDK (sample depends on it via file: path)
+(cd ../../sdks/node && npm install && npm run build)
+
+# 2. Install sample dependencies
 npm install
 
-# 2. Initialize touchenv and add secrets
-touchenv init
-touchenv set PORT 3000
-touchenv set DATABASE_URL "postgres://localhost:5432/mydb"
-touchenv set API_KEY "sk-secret-key-example"
+# 3. Initialize touchenv and add secrets (use local CLI build)
+export PATH="$PWD/../../cli/dist:$PATH"
+chmod +x ../../cli/dist/cli.js
+../../cli/dist/cli.js init
+../../cli/dist/cli.js set PORT 3000
+../../cli/dist/cli.js set DATABASE_URL "postgres://localhost:5432/mydb"
+../../cli/dist/cli.js set API_KEY "sk-secret-key-example"
 
-# 3. Run the app
+# 4. Run the app
 node app.js
 # → Server listening on http://localhost:3000
 ```
@@ -38,11 +45,11 @@ console.log(process.env.DATABASE_URL);
 **After** (touchenv — one-line change):
 
 ```js
-require('@cstar/touchenv-node').config();
+require('@escapevelocityoperations/touchenv-node').config();
 console.log(process.env.DATABASE_URL);
 ```
 
-That's it. Same API, encrypted at rest.
+Same API, encrypted at rest.
 
 ## CI/CD
 
@@ -57,4 +64,4 @@ node app.js
 ## Files
 
 - `app.js` — Express server using touchenv
-- `package.json` — Dependencies
+- `package.json` — Dependencies (SDK via `file:../../sdks/node`)

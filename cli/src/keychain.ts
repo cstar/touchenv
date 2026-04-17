@@ -1,8 +1,12 @@
 import { execFile } from 'node:child_process';
-import { resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { generateKey } from './crypto.js';
 
-const KEYCHAIN_BIN = 'touchenv-keychain';
+// Resolve bundled Swift binary at dist/bin/touchenv-keychain, fall back to PATH.
+const BUNDLED_BIN = resolve(dirname(fileURLToPath(import.meta.url)), 'bin', 'touchenv-keychain');
+const KEYCHAIN_BIN = existsSync(BUNDLED_BIN) ? BUNDLED_BIN : 'touchenv-keychain';
 
 /**
  * Resolve the DEK for the current project.

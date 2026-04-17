@@ -19,13 +19,26 @@ export const initCommand = new Command('init')
       process.exit(1);
     }
 
-    const hexKey = await generateAndStoreKey(projectDir);
+    const envKey = process.env['TOUCHENV_KEY'];
+    let hexKey: string;
+    let storedIn: string;
 
-    // Create empty encrypted file (empty .env content)
+    if (envKey) {
+      if (!/^[0-9a-fA-F]{64}$/.test(envKey)) {
+        console.error('error: TOUCHENV_KEY must be exactly 64 hex characters (256 bits)');
+        process.exit(1);
+      }
+      hexKey = envKey.toLowerCase();
+      storedIn = 'TOUCHENV_KEY env var (not stored in Keychain)';
+    } else {
+      hexKey = await generateAndStoreKey(projectDir);
+      storedIn = `macOS Keychain (account: ${projectDir})`;
+    }
+
     const data = encodeEncrypted('', hexKey);
     writeFileSync(encFile, data);
 
     console.log(`Initialized touchenv in ${projectDir}`);
-    console.log(`  DEK stored in macOS Keychain (account: ${projectDir})`);
+    console.log(`  DEK: ${storedIn}`);
     console.log(`  Created ${ENCRYPTED_FILE}`);
   });

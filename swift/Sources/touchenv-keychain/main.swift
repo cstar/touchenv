@@ -68,9 +68,15 @@ func store(account: String, hexKey: String) throws {
     ]
     SecItemDelete(deleteQuery as CFDictionary)
 
+    // Try biometry-gated access first. Requires a properly code-signed
+    // binary (Developer ID with keychain-access-groups entitlement).
+    // Fall back to a plain login-keychain item if the entitlement is
+    // missing — Keychain is still encrypted at rest and unlocked by the
+    // user's login password. This makes the tool usable when installed
+    // from a locally-built or ad-hoc signed binary (e.g. `npm install`
+    // of an un-notarized release).
     let access = try createAccessControl()
-
-    let addQuery: [String: Any] = [
+    let gatedQuery: [String: Any] = [
         kSecClass as String: kSecClassGenericPassword,
         kSecAttrService as String: service,
         kSecAttrAccount as String: account,
@@ -78,7 +84,21 @@ func store(account: String, hexKey: String) throws {
         kSecAttrAccessControl as String: access,
     ]
 
-    let status = SecItemAdd(addQuery as CFDictionary, nil)
+    var status = SecItemAdd(gatedQuery as CFDictionary, nil)
+    if status == errSecMissingEntitlement {
+        FileHandle.standardError.write(Data(
+            "warning: biometry gate unavailable (binary not signed with keychain entitlement); falling back to login-keychain access\n".utf8
+        ))
+        let plainQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+        ]
+        status = SecItemAdd(plainQuery as CFDictionary, nil)
+    }
+
     guard status == errSecSuccess else {
         throw KeychainError.store(status)
     }

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { decodeEncrypted, encodeEncrypted } from './format.js';
+import { keychainRetrieve } from './keychain.js';
 import { parse } from './parser.js';
 
 export { decodeEncrypted, encodeEncrypted } from './format.js';
@@ -25,15 +26,23 @@ export interface ConfigOutput {
   error?: Error;
 }
 
-function getKey(explicit?: string): string {
-  const key = explicit ?? process.env['TOUCHENV_KEY'];
-  if (!key) {
-    throw new Error(
-      'TOUCHENV_KEY environment variable not set. '
-      + 'Set it to a 64-char hex DEK, or use touchenv-keychain on macOS.',
-    );
-  }
-  return key;
+// Resolve the DEK. Priority:
+//   1. Explicit `key` option
+//   2. TOUCHENV_KEY env var (CI/headless)
+//   3. macOS login Keychain (via touchenv-keychain helper) — account = CWD
+function getKey(explicit?: string, projectDir: string = process.cwd()): string {
+  if (explicit) return explicit;
+
+  const envKey = process.env['TOUCHENV_KEY'];
+  if (envKey) return envKey;
+
+  const chainKey = keychainRetrieve(resolve(projectDir));
+  if (chainKey) return chainKey;
+
+  throw new Error(
+    'touchenv: DEK not found. Set TOUCHENV_KEY (64-char hex), '
+    + 'or run `touchenv init` to store one in the macOS login Keychain.',
+  );
 }
 
 /**

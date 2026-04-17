@@ -10,7 +10,67 @@ permissions:
   packages: write
 
 jobs:
+  # Build + sign + notarize the Swift helper so the SDK can bundle it for
+  # automatic macOS Keychain resolution at runtime. Secrets are the same set
+  # used by release-cli.yml.
+  build-swift:
+    runs-on: macos-14
+    env:
+      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+      MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      MACOS_CERT_IDENTITY: ${{ secrets.MACOS_CERT_IDENTITY }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build universal binary (arm64 + x86_64)
+        run: |
+          cd swift
+          swift build -c release --arch arm64 --arch x86_64
+
+      - name: Import Developer ID certificate
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/sign.keychain-db"
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "$MACOS_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" \
+            -P "$MACOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" \
+            $(security list-keychain -d user | tr -d '" ')
+          rm "$RUNNER_TEMP/cert.p12"
+
+      - name: Sign + notarize
+        run: |
+          set -euo pipefail
+          BIN=swift/.build/apple/Products/Release/touchenv-keychain
+          codesign --sign "$MACOS_CERT_IDENTITY" \
+            --entitlements swift/touchenv-keychain.entitlements \
+            --options runtime --timestamp --force "$BIN"
+          codesign --verify --strict --verbose=2 "$BIN"
+          ZIP="$RUNNER_TEMP/touchenv-keychain.zip"
+          ditto -c -k --keepParent "$BIN" "$ZIP"
+          xcrun notarytool submit "$ZIP" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_ID_PASSWORD" \
+            --wait
+
+      - name: Upload Swift binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: touchenv-keychain
+          path: swift/.build/apple/Products/Release/touchenv-keychain
+
   release:
+    needs: build-swift
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,6 +94,15 @@ jobs:
         run: npm test
         env:
           TOUCHENV_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+      - name: Download signed Swift binary
+        uses: actions/download-artifact@v4
+        with:
+          name: touchenv-keychain
+          path: sdks/node/dist/bin
+
+      - name: Make Swift binary executable
+        run: chmod +x dist/bin/touchenv-keychain
 
       - name: Publish to npm
         run: npm publish --access public

@@ -59,11 +59,16 @@ Low-level: decrypt a buffer with a hex DEK, returns a key/value object.
 
 ## Key resolution
 
-1. **`TOUCHENV_KEY`** env var (64-char hex) — for CI/headless
-2. **macOS login Keychain** — via the `touchenv-keychain` helper installed by
-   the CLI package
+The SDK resolves the DEK in this order:
 
-If neither is available, `config()` returns `{ parsed: {}, error }`.
+1. **`options.key`** passed to `config()` / `values()`
+2. **`TOUCHENV_KEY`** env var (64-char hex) — for CI/headless
+3. **macOS login Keychain** — automatic, via a bundled notarized
+   `touchenv-keychain` helper; account = `process.cwd()`
+
+So on a macOS dev machine you typically need nothing beyond `touchenv init` —
+`config()` pulls the DEK from Keychain on its own. If none of the sources
+yields a key, `config()` returns `{ parsed: {}, error }`.
 
 ## CI/CD
 
